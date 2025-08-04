@@ -1,4 +1,5 @@
 print("\n| Bem-vindo! Para iniciarmos seu cadastro, escolha uma das opções abaixo. |")
+
 class Usuario:
     def __init__(self,nome, cpf, perfil, ativo=True):
         self.nome = nome
@@ -24,6 +25,20 @@ class Empresa:
             print(f"Usuário {usuario.nome} adicionado com sucesso como {usuario.perfil}.")
 
 empresas = []
+
+def escolher_empresa():
+    if not empresas:
+        print("Nenhuma empresa cadastrada.")
+        return None
+    print("\nEmpresas cadastradas:")
+    for i, e in enumerate(empresas):
+        print(f"{i + 1}. {e.nome_fantasia} (CNPJ: {e.cnpj})")
+    try:
+        indice = int(input("Escolha o número da empresa: ")) - 1
+        return empresas[indice]
+    except (IndexError, ValueError):
+        print("Opção inválida.")
+        return None
 
 while True:
     print("\n1. Cadastrar empresa")
@@ -61,97 +76,86 @@ while True:
         print(f"Tipo da empresa: {empresa.tipo.upper()}\n")
 
     elif opcao == "2":
-        if not 'empresa' in globals():
-            print("\nÉ necessário que uma empresa seja cadastrada.\n")
-        else:
-            nome_usuario = input("Digite o nome do usuário: ")
-            cpf_usuario = input("Digite o CPF do usuário: ")
-            perfis_validos = ["agência", "parceiro", "colaborador", "administrador"]
-            perfil_usuario = input("Digite o perfil do usuário (agência, parceiro, colaborador, administrador): ").lower()
-            
-            while perfil_usuario not in perfis_validos:
-                print("A opção informada não existe. Escolha uma das alternativas válidas.")
-                perfil_usuario = input ("informe novamente o tipo de perfil: ")
-            
-            usuario = Usuario(nome_usuario, cpf_usuario, perfil_usuario)
-            
-            empresa.adicionar_usuario(usuario)
+        empresa = escolher_empresa()
+        if empresa is None:
+            continue
+        nome_usuario = input("Digite o nome do usuário: ")
+        cpf_usuario = input("Digite o CPF do usuário: ")
+        perfis_validos = ["agência", "parceiro", "colaborador", "administrador"]
+        perfil_usuario = input("Digite o perfil do usuário (agência, parceiro, colaborador, administrador): ").lower()
+        
+        while perfil_usuario not in perfis_validos:
+            print("Perfil inválido. Escolha uma das alternativas válidas.")
+            perfil_usuario = input("Informe novamente o tipo de perfil: ").lower()
 
-            print("\nCadastro realizado com sucesso!\n")
-            print(f"Nome do usuário: {nome_usuario}")
-            print(f"Cpf do usuário: {cpf_usuario}")
-            print(f"perfil do usuário: {perfil_usuario}\n")
+        usuario = Usuario(nome_usuario, cpf_usuario, perfil_usuario)
+        empresa.adicionar_usuario(usuario)
+
+        print("\nCadastro realizado com sucesso!\n")
+        print(f"Nome do usuário: {nome_usuario}")
+        print(f"Cpf do usuário: {cpf_usuario}")
+        print(f"perfil do usuário: {perfil_usuario}\n")
             
     elif opcao == "3":
-        if not 'empresa' in globals():
-            print("\nÉ necessário que uma empresa seja cadastrada.\n")
-        else:
-            novo_nome = str(input("Informe o novo nome: "))
-            empresa.nome_fantasia = novo_nome
+        empresa = escolher_empresa()
+        if empresa is None:
+            continue
+        empresa.nome_fantasia = input("Informe o novo nome fantasia: ")
+        empresa.razao_social = input("Informe a nova razão social: ")
+        empresa.cnpj = input("Informe o novo CNPJ: ")
+        empresa.endereco = input("Informe o novo endereço: ")
+        empresa.socios = input("Informe os novos sócios: ")
+        tipo_validos = ["mei", "ei", "slu", "ltda", "s.a"]
+        novo_tipo = input("Informe o novo tipo da empresa (MEI, EI, SLU, LTDA, S.A): ").lower()
+        
+        while novo_tipo not in tipo_validos:
+            print("Tipo inválido.")
+            novo_tipo = input("Informe novamente o tipo: ").lower()
+        empresa.tipo = novo_tipo
 
-            nova_razao = str(input("Informe a nova razão social: "))
-            empresa.razao_social = nova_razao
-
-            novo_cnpj = str(input("Informe o novo Cnpj: "))
-            empresa.cnpj = novo_cnpj
-
-            novo_endereco = str(input("Informe o novo endereço: "))
-            empresa.endereco = novo_endereco
-
-            novos_socios = str(input("Informe os novos sócios: "))
-            empresa.socios = novos_socios
-
-            tipo_validos = ["mei", "ei", "slu", "ltda", "s.a"]
-            novo_tipo = str(input("Informe o novo tipo da empresa (MEI, EI, SLU, LTDA, S.A): ")).lower()
-            
-            while novo_tipo not in tipo_validos:
-                print("A opção informada não existe. Escolha uma das alternativas válidas.")
-                novo_tipo = str(input("Informe o novo tipo da empresa: ")).lower()
-                empresa.tipo = novo_tipo
-
-            print("\nDados da empresa atualizados com sucesso!\n")
-            print(f"Novo nome: {novo_nome}")
-            print(f"Nova razão social: {nova_razao}")
-            print(f"Novo Cnpj: {novo_cnpj}")
-            print(f"Novo endereço: {novo_endereco}")
-            print(f"Novos(as) sócios(as): {novos_socios}")
-            print(f"Novo tipo da empresa: {novo_tipo}\n")
+        print("\nDados da empresa atualizados com sucesso.")
+        print("\nDados da empresa atualizados com sucesso!\n")
+        print(f"Novo nome: {nome_fantasia}")
+        print(f"Nova razão social: {razao_social}")
+        print(f"Novo Cnpj: {cnpj}")
+        print(f"Novo endereço: {endereco}")
+        print(f"Novos(as) sócios(as): {socios}")
+        print(f"Novo tipo da empresa: {novo_tipo}\n")
 
     elif opcao == "4": 
-        if not 'empresa' in globals():
-            print("\nÉ necessário que um usuário seja cadastrado.\n")
+        empresa = escolher_empresa()
+        if empresa is None or not empresa.usuarios:
+            print("Essa empresa não possui usuários.")
+            continue
+        cpf = input("Informe o CPF do usuário que deseja editar: ")
+        for u in empresa.usuarios:
+            if u.cpf == cpf:
+                u.nome = input("Novo nome: ")
+                u.cpf = input("Novo CPF: ")
+                perfis_validos = ["agência", "parceiro", "colaborador", "administrador"]
+                novo_perfil = input("Novo perfil: ").lower()
+                while novo_perfil not in perfis_validos:
+                    print("Perfil inválido.")
+                    novo_perfil = input("Informe novamente o perfil: ").lower()
+                u.perfil = novo_perfil
+                print("Usuário atualizado com sucesso.")
+                break
         else:
-            novo_usuario = str(input("Informe o novo nome: "))
-            empresa.nome_usuario = novo_usuario
-
-            novo_cpf = str(input("Informe o novo Cpf: "))
-            empresa.cpf_usuario = novo_cpf
-
-            perfis_validos = ["agência", "parceiro", "colaborador", "administrador"]
-            novo_perfil = input("Digite o novo perfil do usuário (agência, parceiro, colaborador, administrador): ").lower()
-            
-            while novo_perfil not in perfis_validos:
-                print("A opção informada não existe. Escolha uma das alternativas válidas.")
-                novo_perfil = input ("informe novamente o tipo de perfil: ")
-                empresa.perfil = novo_perfil
-   
-            print("\nDados da empresa atualizados com sucesso!\n")
-            print(f"Novo usuario: {novo_usuario}")
-            print(f"Nov Cpf: {novo_cpf}")
-            print(f"Novo Perfil: {novo_perfil}")
+            print("Usuário não encontrado.")
             
     elif opcao == "5":
-        if not 'empresa' in globals() or len(empresa.usuarios) == 0:
-            print("\nÉ necessário que exista um usuário cadastrado.\n")
-        else:
-            cpf = input("Informe o CPF do usuário a ser excluído: ")
-            for u in empresa.usuarios:
-                if u.cpf == cpf:
-                    empresa.usuarios.remove(u)
-                    print(f"\nUsuário {u.nome} foi removido com sucesso.\n")
+        empresa = escolher_empresa()
+        if empresa is None or not empresa.usuarios:
+            print("Essa empresa não possui usuários.")
+            continue
+        cpf = input("Informe o CPF do usuário a ser excluído: ")
+        for u in empresa.usuarios:
+            if u.cpf == cpf:
+                empresa.usuarios.remove(u)
+                print(f"Usuário {u.nome} foi removido com sucesso.")
                 break
-            else:
-                    print("Usuário não encontrado na empresa.")
+        else:
+            print("Usuário não encontrado.")
 
     elif opcao == "6":
         print("1. Consultar empresa por tipo")
@@ -160,19 +164,25 @@ while True:
 
         if escolha == "1":
             tipo = input("Digite o tipo da empresa: ").lower()
-            if empresa.tipo == tipo:
-                print(f"Empresa: {empresa.nome_fantasia}, Tipo: {empresa.tipo.upper()}")
+            encontradas = [e for e in empresas if e.tipo == tipo]
+            if encontradas:
+                for e in encontradas:
+                    print(f"Empresa: {e.nome_fantasia}, Tipo: {e.tipo.upper()}")
             else:
                 print("Nenhuma empresa cadastrada com esse tipo.")
 
         elif escolha == "2":
             perfil = input("Digite o perfil do usuário: ").lower()
-            encontrados = [u for u in empresa.usuarios if u.perfil == perfil]
-            if encontrados:
-                for u in encontrados:
-                    status = "Ativo" if u.ativo else "Inativo"
-                    print(f"{u.nome} ({u.cpf}) - {u.perfil} - {status}")
-            else:
+            encontrados = False
+            for e in empresas:
+                usuarios = [u for u in e.usuarios if u.perfil == perfil]
+                if usuarios:
+                    print(f"\nNa empresa {e.nome_fantasia}:")
+                    for u in usuarios:
+                        status = "Ativo" if u.ativo else "Inativo"
+                        print(f"  {u.nome} ({u.cpf}) - {u.perfil} - {status}")
+                    encontrados = True
+            if not encontrados:
                 print("Nenhum usuário com esse perfil.")
 
     sair = input("Deseja voltar ao menu de opções? (s/n): ").lower()
