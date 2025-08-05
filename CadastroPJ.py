@@ -133,9 +133,10 @@ while True:
                 u.nome = input("Novo nome: ")
                 u.cpf = input("Novo CPF: ")
                 perfis_validos = ["agência", "parceiro", "colaborador", "administrador"]
-                novo_perfil = input("Novo perfil: ").lower()
+                novo_perfil = input("Digite o novo perfil: (agência, parceiro, colaborador, administrador): ").lower()
+
                 while novo_perfil not in perfis_validos:
-                    print("Perfil inválido.")
+                    print("Perfil inválido. Escolha uma das alternativas válidas")
                     novo_perfil = input("Informe novamente o perfil: ").lower()
                 u.perfil = novo_perfil
                 print("Usuário atualizado com sucesso.")
@@ -163,7 +164,7 @@ while True:
         escolha = input("Escolha uma opção entre 1 e 2: ")
 
         if escolha == "1":
-            tipo = input("Digite o tipo da empresa: ").lower()
+            tipo = input("Digite o tipo da empresa (MEI, EI, SLU, LTDA, S.A): ").lower()
             encontradas = [e for e in empresas if e.tipo == tipo]
             if encontradas:
                 for e in encontradas:
@@ -172,7 +173,7 @@ while True:
                 print("Nenhuma empresa cadastrada com esse tipo.")
 
         elif escolha == "2":
-            perfil = input("Digite o perfil do usuário: ").lower()
+            perfil = input("Digite o perfil do usuário (agência, parceiro, colaborador, administrador): ").lower()
             encontrados = False
             for e in empresas:
                 usuarios = [u for u in e.usuarios if u.perfil == perfil]
